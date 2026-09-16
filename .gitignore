@@ -6,3 +6,9 @@ temp_interactive_push.bat
 .gitignore
 .idea/
 server.log
+
+.vscode/
+sessions.json
+dist/
+playwright-report/
+test-results/
