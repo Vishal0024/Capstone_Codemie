@@ -36,6 +36,7 @@ function updateStatsBar(todos) {
 
 function renderTodos(data) {
   updateStatsBar(data);
+  document.getElementById('stats-bar').style.display = 'flex';
   setLoading(false);
   currentTodos = data;
   const outputContainer = document.querySelector('.outputData');
