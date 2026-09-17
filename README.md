@@ -88,3 +88,29 @@ This project is licensed under the ISC License. See the [LICENSE](LICENSE) file 
 ## ⭐️ Star this repo if you found it helpful!
 
 Happy coding! 🌟
+
+## Task Count Summary Bar
+
+A live stats bar appears below the filter/sort controls whenever a user is authenticated. It shows three counters derived from the currently rendered task list — no additional API calls are made:
+
+| Badge | Description |
+|-------|-------------|
+| **Total** | Total number of tasks currently displayed |
+| **Active** | Tasks not yet completed |
+| **Completed** | Tasks marked as done |
+
+Counts update in real time as you search, filter, toggle, add, or delete tasks. The bar is automatically hidden when no user is logged in and resets to zero on logout.
+
+**Implementation details:**
+- Pure client-side — counts computed from the array already returned by `GET /todos`
+- `updateStatsBar(todos)` is called as the first statement inside `renderTodos()`
+- Glassmorphism container (`backdrop-filter: blur`) with pill-shaped badges styled per state
+- ARIA: `role="region"`, `aria-label="Task statistics"`, `aria-live="polite"` for accessibility
+- Responsive layout at `max-width: 600px`
+
+Jira Epic: EPMCDMETST-65291 | Stories: EPMCDMETST-65292, EPMCDMETST-65293, EPMCDMETST-65294
+
+## Claude Code CLI Usage
+
+AI-assisted implementation via Claude Code CLI (CodeMie). See full evidence:
+[docs/ai/claude-code-cli-usage.md](docs/ai/claude-code-cli-usage.md)
