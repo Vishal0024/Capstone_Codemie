@@ -2,9 +2,11 @@
   "name": "02-nodejs",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "todoServer.js",
   "scripts": {
-    "start": "npx nodemon todoServer.js"
+    "start": "npx nodemon todoServer.js",
+    "build": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build.ps1",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest --testPathPattern=tests/"
   },
   "keywords": [],
   "author": "",
