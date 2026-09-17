@@ -24,6 +24,20 @@
     </div>
   </header>
   <main class="main-content">
+    <div id="todo-summary" role="region" aria-label="Task Summary" aria-live="polite" style="display:none;">
+      <div class="summary-card" id="summary-total">
+        <span class="summary-count" id="summary-total-count">0</span>
+        <span class="summary-label">Total</span>
+      </div>
+      <div class="summary-card summary-active" id="summary-active">
+        <span class="summary-count" id="summary-active-count">0</span>
+        <span class="summary-label">Active</span>
+      </div>
+      <div class="summary-card summary-completed" id="summary-completed">
+        <span class="summary-count" id="summary-completed-count">0</span>
+        <span class="summary-label">Completed</span>
+      </div>
+    </div>
     <section class="todo-controls">
       <input type="text" id="search-input" placeholder="Search todos..." />
       <select id="filter-select">
