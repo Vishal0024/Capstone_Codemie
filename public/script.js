@@ -167,6 +167,7 @@ function showAuthButtons() {
   document.getElementById('logout-btn').style.display = 'none';
   document.getElementById('add-todo-btn').style.display = 'none';
   document.querySelector('.outputData').style.display = 'none';
+  document.getElementById('stats-bar').style.display = 'none';
   // Always attach listeners when showing
   loginBtn.onclick = function() {
     console.log('Login button clicked');
@@ -192,6 +193,7 @@ function clearAuth() {
   localStorage.removeItem('name');
   localStorage.removeItem('email');
   document.getElementById('user-info').textContent = '';
+  updateStatsBar([]);
   showAuthButtons();
 }
 function checkAuth() {
