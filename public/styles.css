@@ -466,6 +466,17 @@ html, body {
   .app-header { padding: 0 1vw; }
   .fab { bottom: 1.2rem; right: 1.2rem; width: 48px; height: 48px; font-size: 1.5rem; }
 }
+@media (max-width: 600px) {
+  #stats-bar {
+    gap: 0.6em;
+    padding: 0.5em 0.8em;
+    border-radius: 10px;
+  }
+  .stat-badge {
+    font-size: 0.85em;
+    padding: 0.3em 0.8em;
+  }
+}
 @media (max-width: 400px) {
   .modal-content { min-width: 90vw; }
 }
