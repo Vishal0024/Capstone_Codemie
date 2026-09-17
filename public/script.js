@@ -36,11 +36,31 @@ function fetchAndRenderTodos() {
   fetchWithAuth(url)
     .then(resp => {
       if (resp.status === 401) { clearAuth(); showAuthModal(false); return []; }
-      console.log(resp);
       return resp.json();
     })
-    .then(renderTodos)
+    .then(data => { renderTodos(data); updateSummaryBar(); })
     .catch(err => alert(err.message));
+}
+
+function updateSummaryBar() {
+  fetchWithAuth(`${API_BASE}/todos?filter=&sort=createdAt`)
+    .then(resp => {
+      if (!resp.ok) return null;
+      return resp.json();
+    })
+    .then(all => {
+      if (!all) return;
+      const total = all.length;
+      const completed = all.filter(t => t.completed).length;
+      const active = total - completed;
+      document.getElementById('summary-total-count').textContent = total;
+      document.getElementById('summary-active-count').textContent = active;
+      document.getElementById('summary-completed-count').textContent = completed;
+      document.getElementById('summary-total').setAttribute('aria-label', `${total} Total tasks`);
+      document.getElementById('summary-active').setAttribute('aria-label', `${active} Active tasks`);
+      document.getElementById('summary-completed').setAttribute('aria-label', `${completed} Completed tasks`);
+    })
+    .catch(err => console.error('Summary bar update failed:', err));
 }
 
 function renderTodos(data) {
@@ -163,6 +183,7 @@ function setAuth(token, name, email) {
   document.getElementById('add-todo-btn').style.display = '';
   document.querySelector('.outputData').style.display = '';
   document.getElementById('user-info').textContent = `${name} (${email})`;
+  document.getElementById('todo-summary').style.display = '';
   closeAuthModal();
   fetchAndRenderTodos();
 }
@@ -190,6 +211,7 @@ function hideAuthButtons() {
   document.getElementById('logout-btn').style.display = '';
   document.getElementById('add-todo-btn').style.display = '';
   document.querySelector('.outputData').style.display = '';
+  document.getElementById('todo-summary').style.display = '';
 }
 function clearAuth() {
   authToken = null;
@@ -199,6 +221,11 @@ function clearAuth() {
   localStorage.removeItem('name');
   localStorage.removeItem('email');
   document.getElementById('user-info').textContent = '';
+  const bar = document.getElementById('todo-summary');
+  bar.style.display = 'none';
+  ['summary-total-count', 'summary-active-count', 'summary-completed-count'].forEach(id => {
+    document.getElementById(id).textContent = '0';
+  });
   showAuthButtons();
 }
 function checkAuth() {
@@ -217,22 +244,6 @@ function fetchWithAuth(url, options = {}) {
   if (authToken) options.headers['Authorization'] = authToken;
   options.mode = 'cors';
   return fetch(url, options);
-}
-
-// --- Update fetchAndRenderTodos to use fetchWithAuth and checkAuth ---
-function fetchAndRenderTodos() {
-  if (!checkAuth()) return;
-  setLoading(true);
-  let url = `${API_BASE}/todos?filter=${currentFilter !== 'all' ? currentFilter : ''}&sort=${currentSort}`;
-  if (currentSearch) url += `&search=${encodeURIComponent(currentSearch)}`;
-  fetchWithAuth(url)
-    .then(resp => {
-      if (resp.status === 401) { clearAuth(); showAuthModal(false); return []; }
-      console.log(resp);
-      return resp.json();
-    })
-    .then(renderTodos)
-    .catch(err => alert(err.message));
 }
 
 document.addEventListener('DOMContentLoaded', function() {
