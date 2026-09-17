@@ -28,7 +28,14 @@ function setLoading(loading) {
   }
 }
 
+function updateStatsBar(todos) {
+  document.getElementById('stat-total').innerText = `Total: ${todos.length}`;
+  document.getElementById('stat-active').innerText = `Active: ${todos.filter(t => !t.completed).length}`;
+  document.getElementById('stat-completed').innerText = `Completed: ${todos.filter(t => t.completed).length}`;
+}
+
 function renderTodos(data) {
+  updateStatsBar(data);
   setLoading(false);
   currentTodos = data;
   const outputContainer = document.querySelector('.outputData');
