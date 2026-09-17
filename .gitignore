@@ -9,6 +9,8 @@ server.log
 
 .vscode/
 sessions.json
+todos.json
+users.json
 dist/
 playwright-report/
 test-results/
