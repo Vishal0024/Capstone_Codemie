@@ -11,6 +11,7 @@ A modern, full-featured To-Do application built with Node.js, Express, and a bea
 - Search, filter, and sort todos
 - All data stored in JSON files (no database required)
 - Clean code, easy to extend and contribute
+- **Task Summary Counter Bar** — live Total / Active / Completed counts (see below)
 
 ## 🛠️ Tech Stack
 - **Frontend:** HTML, CSS (Poppins font, glassmorphism, responsive design), Vanilla JS
@@ -54,6 +55,25 @@ A modern, full-featured To-Do application built with Node.js, Express, and a bea
 - **Manage To-Dos:** Add, edit, delete, and mark to-dos as complete/incomplete.
 - **Search/Filter/Sort:** Use the controls to find and organize your tasks.
 - **Session:** The app shows who is logged in in the header.
+
+## 📊 Task Summary Counter Bar
+
+After logging in, a glassmorphism counter bar is displayed above the task controls showing three live counts for the logged-in user:
+
+| Card | Color | Description |
+|---|---|---|
+| **Total** | Purple | All tasks belonging to you |
+| **Active** | Green | Tasks not yet completed |
+| **Completed** | Orange | Tasks marked as done |
+
+The counts always reflect your full task list, regardless of any active search or filter. They update automatically after every create, edit, delete, and toggle action. On logout the bar is hidden and counts reset to zero.
+
+The bar is fully accessible: the region has `role="region"` and `aria-live="polite"`, and each card carries an `aria-label` (e.g. "7 Total tasks").
+
+## 🤖 Claude Code CLI Usage
+
+This feature was implemented with the assistance of Claude Code CLI via CodeMie (Jira epic EPMCDMETST-65254).
+See [`docs/ai/claude-code-cli-usage.md`](docs/ai/claude-code-cli-usage.md) for the full prompt summary, files changed, and verification results.
 
 ## 🤝 Contributing
 We welcome contributions! To get started:
