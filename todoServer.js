@@ -82,11 +82,25 @@ function getUserIdFromToken(req) {
   return sessions[auth] || null;
 }
 
-function validateTodoInput(todo) {
-  if (!todo.title || typeof todo.title !== 'string' || todo.title.trim() === '') return false;
-  if (!todo.description || typeof todo.description !== 'string') return false;
-  if (typeof todo.completed !== 'boolean') return false;
-  return true;
+function validateTodoInput(data) {
+  const TITLE_MAX = 100;
+  const DESC_MAX  = 500;
+
+  if (!data.title || typeof data.title !== 'string' || data.title.trim() === '') {
+    return 'Title is required.';
+  }
+  if (data.title.trim().length > TITLE_MAX) {
+    return `Title must not exceed ${TITLE_MAX} characters.`;
+  }
+  if (data.description !== undefined && data.description !== null) {
+    if (typeof data.description !== 'string') {
+      return 'Description must be a string.';
+    }
+    if (data.description.length > DESC_MAX) {
+      return `Description must not exceed ${DESC_MAX} characters.`;
+    }
+  }
+  return null; // valid
 }
 
 // Signup
@@ -185,8 +199,9 @@ app.post('/todos', requireAuth, (req, res) => {
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
-  if (!validateTodoInput(newTodo)) {
-    return res.status(400).json({ error: 'Invalid input' });
+  const createErr = validateTodoInput(newTodo);
+  if (createErr) {
+    return res.status(400).json({ error: createErr });
   }
   todos.push(newTodo);
   if (!writeTodos(todos, res)) return;
@@ -206,8 +221,9 @@ app.put('/todos/:id', requireAuth, (req, res) => {
       completed: !!completed,
       updatedAt: new Date().toISOString(),
     };
-    if (!validateTodoInput(updatedTodo)) {
-      return res.status(400).json({ error: 'Invalid input' });
+    const updateErr = validateTodoInput(updatedTodo);
+    if (updateErr) {
+      return res.status(400).json({ error: updateErr });
     }
     todos[todoIndex] = updatedTodo;
     if (!writeTodos(todos, res)) return;
