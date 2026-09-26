@@ -11,6 +11,7 @@ A modern, full-featured To-Do application built with Node.js, Express, and a bea
 - Search, filter, and sort todos
 - All data stored in JSON files (no database required)
 - Clean code, easy to extend and contribute
+- **Todo Completion Counter / Summary Bar** — live "X of Y tasks completed" label with animated CSS progress bar between controls and todo grid; reflects active filter/search state; turns green at 100%
 
 ## 🛠️ Tech Stack
 - **Frontend:** HTML, CSS (Poppins font, glassmorphism, responsive design), Vanilla JS
@@ -84,6 +85,10 @@ This project is licensed under the ISC License. See the [LICENSE](LICENSE) file 
 - Add dark mode and more themes
 - Add unit and integration tests
 - Add deployment scripts for cloud platforms
+
+## Claude Code CLI Usage
+
+See [docs/ai/claude-code-cli-usage.md](docs/ai/claude-code-cli-usage.md)
 
 ## ⭐️ Star this repo if you found it helpful!
 
