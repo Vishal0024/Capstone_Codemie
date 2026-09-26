@@ -5,12 +5,16 @@
   "main": "index.js",
   "scripts": {
     "start": "node todoServer.js",
-    "build": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build.ps1"
+    "build": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build.ps1",
+    "test:api": "jest tests/api.test.js --forceExit",
+    "test:e2e": "npx playwright test tests/e2e/summary-bar.spec.js --reporter=list"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "jest": "^29.7.0",
     "nodemon": "^3.0.1",
     "supertest": "^6.3.3"
   },
