@@ -28,19 +28,18 @@ function setLoading(loading) {
   }
 }
 
-function fetchAndRenderTodos() {
-  if (!checkAuth()) return;
-  setLoading(true);
-  let url = `${API_BASE}/todos?filter=${currentFilter !== 'all' ? currentFilter : ''}&sort=${currentSort}`;
-  if (currentSearch) url += `&search=${encodeURIComponent(currentSearch)}`;
-  fetchWithAuth(url)
-    .then(resp => {
-      if (resp.status === 401) { clearAuth(); showAuthModal(false); return []; }
-      console.log(resp);
-      return resp.json();
-    })
-    .then(renderTodos)
-    .catch(err => alert(err.message));
+function updateSummaryBar(todos) {
+  const label = document.getElementById('summary-label');
+  const fill  = document.getElementById('progress-fill');
+  if (!label || !fill) return;
+  const total     = todos.length;
+  const completed = todos.filter(t => t.completed).length;
+  const pct       = total > 0 ? Math.round((completed / total) * 100) : 0;
+  label.textContent = `${completed} of ${total} task${total !== 1 ? 's' : ''} completed`;
+  fill.style.width  = `${pct}%`;
+  fill.setAttribute('aria-valuenow', pct);
+  if (pct === 100 && total > 0) { fill.classList.add('all-done'); }
+  else                          { fill.classList.remove('all-done'); }
 }
 
 function renderTodos(data) {
@@ -50,6 +49,7 @@ function renderTodos(data) {
   outputContainer.innerHTML = '';
   if (!data.length) {
     outputContainer.innerHTML = '<div class="empty-state">No todos found.</div>';
+    updateSummaryBar(data);
     return;
   }
   data.forEach(element => {
@@ -95,6 +95,7 @@ function renderTodos(data) {
     document.querySelector('.outputData').appendChild(card);
   });
   updateFilterSortFeedback();
+  updateSummaryBar(data);
 }
 
 function openCreateModal() {
