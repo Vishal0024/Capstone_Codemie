@@ -8,7 +8,7 @@ A modern, full-featured To-Do application built with Node.js, Express, and a bea
 - Add, edit, delete, and toggle completion of to-dos
 - Each user has their own to-do list
 - Responsive, modern UI with floating labels and glassmorphism
-- Search, filter, and sort todos
+- Search, filter, and sort the todos
 - All data stored in JSON files (no database required)
 - Clean code, easy to extend and contribute
 
