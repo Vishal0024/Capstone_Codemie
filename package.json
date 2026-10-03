@@ -6,12 +6,16 @@
   "scripts": {
     "start": "node todoServer.js",
     "dev": "npx nodemon todoServer.js",
-    "build": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build.ps1"
+    "build": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build.ps1",
+    "test:api": "jest --config jest.config.js --runInBand",
+    "test:e2e": "playwright test"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "jest": "^29.7.0",
     "nodemon": "^3.0.1",
     "supertest": "^6.3.3"
   },
