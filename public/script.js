@@ -43,6 +43,60 @@ function fetchAndRenderTodos() {
     .catch(err => alert(err.message));
 }
 
+// --- Card dates (EPMCDMETST-67543) ---
+const EDITED_THRESHOLD_MS = 1000;
+const CARD_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+// Returns a valid Date, or null for missing / empty / non-string-or-number / unparsable values. Never throws.
+function parseCardDate(value) {
+  if (typeof value !== 'string' && typeof value !== 'number') return null;
+  if (typeof value === 'string' && value.trim() === '') return null;
+  const d = new Date(value);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+// Formats a valid Date as "DD Mon YYYY" in local time, independent of the browser locale.
+function formatCardDate(date) {
+  return String(date.getDate()).padStart(2, '0') + ' ' +
+    CARD_MONTHS[date.getMonth()] + ' ' + date.getFullYear();
+}
+
+// Returns { created, edited } label texts; edited is null unless updatedAt is more than EDITED_THRESHOLD_MS after createdAt.
+function getCardDates(todo) {
+  const t = todo && typeof todo === 'object' ? todo : {};
+  const created = parseCardDate(t.createdAt);
+  const updated = parseCardDate(t.updatedAt);
+  return {
+    created: created ? 'Created ' + formatCardDate(created) : 'Created: Not available',
+    edited: created && updated && updated.getTime() - created.getTime() > EDITED_THRESHOLD_MS
+      ? 'Edited ' + formatCardDate(updated) : null,
+  };
+}
+
+// Builds the card date line; all text is set with textContent only.
+function buildTodoDates(todo) {
+  const dates = getCardDates(todo);
+  const container = document.createElement('div');
+  container.className = 'todo-timestamp';
+  container.setAttribute('data-testid', 'todo-dates');
+  const created = document.createElement('span');
+  created.className = 'todo-date';
+  created.setAttribute('data-testid', 'todo-created');
+  created.textContent = dates.created;
+  container.appendChild(created);
+  if (dates.edited !== null) {
+    const sep = document.createElement('span');
+    sep.className = 'todo-date-sep';
+    sep.textContent = ' \u00B7 ';
+    const edited = document.createElement('span');
+    edited.className = 'todo-date';
+    edited.setAttribute('data-testid', 'todo-edited');
+    edited.textContent = dates.edited;
+    container.append(sep, edited);
+  }
+  return container;
+}
+
 function renderTodos(data) {
   setLoading(false);
   currentTodos = data;
@@ -68,9 +122,7 @@ function renderTodos(data) {
     desc.id = 'desc';
     desc.textContent = element.description;
     // Timestamps
-    const timestamps = document.createElement('div');
-    timestamps.className = 'todo-timestamp';
-    timestamps.textContent = `Created: ${new Date(element.createdAt).toLocaleString()} | Updated: ${new Date(element.updatedAt).toLocaleString()}`;
+    const timestamps = buildTodoDates(element);
     // Actions
     const actions = document.createElement('div');
     actions.className = 'todo-actions';
@@ -499,4 +551,9 @@ function confirmDelete(id) {
     })
     .then(fetchAndRenderTodos)
     .catch(err => alert(err.message));
+}
+
+// Node-only export for unit tests (EPMCDMETST-67543); no effect in the browser.
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { parseCardDate, formatCardDate, getCardDates, EDITED_THRESHOLD_MS };
 }
