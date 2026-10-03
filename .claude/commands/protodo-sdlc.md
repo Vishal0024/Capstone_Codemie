@@ -11,16 +11,16 @@ Arguments: `$ARGUMENTS`
 ## Assistants (CodeMie subagents)
 
 | Phase | Subagent | Fallback ID (for `codemie assistants chat`) |
-|---|---|--|
-| 1 Analysis | @1protodo-analyst | 1protodo-analyst |
-| 2 Requirements (Jira) | @2-protodo-business-analyst | 2-protodo-business-analyst |
-| 3 Planning (Jira + Confluence) | @3-protodo-planner | 3-protodo-planner |
-| 4 Architecture (Confluence) | @4-protodo-architect | 4-protodo-architect |
-| 5 Development spec | @5-protodo-developer | 5-protodo-developer |
-| 6 Code review (GitHub) | @6-protodo-code-reviewer | 6-protodo-code-reviewer |
-| 7 Test spec | @7-protodo-qa | 7-protodo-qa |
-| 8 Release sign-off (Confluence) | @8-protodo-release | 8-protodo-release |
-| 9 Documentation (Confluence) | @9-protodo-documentation | 9-protodo-documentation |
+|---|---|---|
+| 1 Analysis | @1protodo-analyst | 27cd11ba-f4e4-4da4-84eb-22baa061421a |
+| 2 Requirements (Jira) | @2-protodo-business-analyst | 726606fb-1246-43e7-8101-c07c864712c1 |
+| 3 Planning (Jira + Confluence) | @3-protodo-planner | f3702dbc-1a31-4213-9287-28d1bbf4f261 |
+| 4 Architecture (Confluence) | @4-protodo-architect | e012c879-b37c-4052-a07b-be0c34953c2d |
+| 5 Development spec | @5-protodo-developer | 67802517-f128-4e49-9d1f-a4dbdf0c1ae2 |
+| 6 Code review (GitHub) | @6-protodo-code-reviewer | d1cdb64b-cd43-46c8-9fad-80a6a6c53069 |
+| 7 Test spec | @7-protodo-qa | d117ca71-afc9-435e-8b9c-2ba75c781bb9 |
+| 8 Release sign-off (Confluence) | @8-protodo-release | a4457445-1d97-4909-bbc6-993d9ac6c057 |
+| 9 Documentation (Confluence) | @9-protodo-documentation | e7d08dcd-aded-45a3-ad84-39a8f481c35f |
 
 Invoke each phase's subagent with a self-contained message containing all inputs it needs (Epic key, PR URL, branch, results). Show the user the subagent's full result.
 **Fallback:** if a subagent is not available, or reports it cannot use its Jira/Confluence/GitHub tools, run it on the CodeMie platform instead: `codemie assistants chat "<ID>" "<message>"`.
