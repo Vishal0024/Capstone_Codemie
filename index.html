@@ -30,11 +30,13 @@
         <option value="all">All</option>
         <option value="active">Active</option>
         <option value="completed">Completed</option>
+        <option value="overdue">Overdue</option>
       </select>
       <select id="sort-select">
         <option value="createdAt">Sort by Created</option>
         <option value="updatedAt">Sort by Updated</option>
         <option value="title">Sort by Title</option>
+        <option value="dueDate">Sort by Due date</option>
       </select>
       <button id="clear-filters-btn" class="icon-btn" title="Clear Filters"><span class="material-icons">filter_alt_off</span></button>
     </section>
@@ -58,6 +60,10 @@
         <div class="input-field">
           <textarea id="edit-desc" placeholder=" " required rows="3"></textarea>
           <label for="edit-desc">Description</label>
+        </div>
+        <div class="input-field">
+          <input type="date" id="edit-dueDate" placeholder=" " />
+          <label for="edit-dueDate">Due date</label>
         </div>
         <div class="input-field" id="completed-checkbox-field" style="display:none;">
           <label for="edit-completed">Completed</label>

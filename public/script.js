@@ -28,19 +28,8 @@ function setLoading(loading) {
   }
 }
 
-function fetchAndRenderTodos() {
-  if (!checkAuth()) return;
-  setLoading(true);
-  let url = `${API_BASE}/todos?filter=${currentFilter !== 'all' ? currentFilter : ''}&sort=${currentSort}`;
-  if (currentSearch) url += `&search=${encodeURIComponent(currentSearch)}`;
-  fetchWithAuth(url)
-    .then(resp => {
-      if (resp.status === 401) { clearAuth(); showAuthModal(false); return []; }
-      console.log(resp);
-      return resp.json();
-    })
-    .then(renderTodos)
-    .catch(err => alert(err.message));
+function isOverdue(todo) {
+  return !todo.completed && !!todo.dueDate && Date.parse(todo.dueDate) < Date.now();
 }
 
 function renderTodos(data) {
@@ -54,7 +43,8 @@ function renderTodos(data) {
   }
   data.forEach(element => {
     const card = document.createElement('div');
-    card.className = 'output' + (element.completed ? ' completed' : '');
+    const overdue = isOverdue(element);
+    card.className = 'output' + (element.completed ? ' completed' : '') + (overdue ? ' overdue' : '');
     // Status badge
     const badge = document.createElement('span');
     badge.className = 'status-badge ' + (element.completed ? 'completed' : 'active');
@@ -67,6 +57,20 @@ function renderTodos(data) {
     const desc = document.createElement('p');
     desc.id = 'desc';
     desc.textContent = element.description;
+    // Due date (stored as UTC midnight, so display in UTC to keep the picked day)
+    let dueDate = null;
+    if (element.dueDate) {
+      dueDate = document.createElement('div');
+      dueDate.className = 'todo-dueDate';
+      dueDate.textContent = `Due: ${new Date(element.dueDate).toLocaleDateString(undefined, { timeZone: 'UTC' })}`;
+    }
+    // Overdue badge
+    let overdueBadge = null;
+    if (overdue) {
+      overdueBadge = document.createElement('span');
+      overdueBadge.className = 'overdue-badge';
+      overdueBadge.textContent = 'OVERDUE';
+    }
     // Timestamps
     const timestamps = document.createElement('div');
     timestamps.className = 'todo-timestamp';
@@ -91,7 +95,11 @@ function renderTodos(data) {
     toggleBtn.onclick = () => toggleComplete(element.id);
     actions.append(editBtn, deleteBtn, toggleBtn);
     // Assemble card
-    card.append(badge, title, desc, timestamps, actions);
+    card.append(badge);
+    if (overdueBadge) card.append(overdueBadge);
+    card.append(title, desc);
+    if (dueDate) card.append(dueDate);
+    card.append(timestamps, actions);
     document.querySelector('.outputData').appendChild(card);
   });
   updateFilterSortFeedback();
@@ -104,6 +112,7 @@ function openCreateModal() {
   document.getElementById('save-edit-btn').textContent = 'Add';
   document.getElementById('edit-title').value = '';
   document.getElementById('edit-desc').value = '';
+  document.getElementById('edit-dueDate').value = '';
   document.getElementById('edit-completed').checked = false;
   document.getElementById('completed-checkbox-field').style.display = 'none';
   const modal = document.getElementById('edit-modal');
@@ -119,6 +128,7 @@ function openEditModal(todo) {
   document.getElementById('save-edit-btn').textContent = 'Save';
   document.getElementById('edit-title').value = todo.title;
   document.getElementById('edit-desc').value = todo.description;
+  document.getElementById('edit-dueDate').value = todo.dueDate ? new Date(todo.dueDate).toISOString().slice(0, 10) : '';
   document.getElementById('edit-completed').checked = todo.completed;
   document.getElementById('completed-checkbox-field').style.display = '';
   const modal = document.getElementById('edit-modal');
@@ -223,7 +233,8 @@ function fetchWithAuth(url, options = {}) {
 function fetchAndRenderTodos() {
   if (!checkAuth()) return;
   setLoading(true);
-  let url = `${API_BASE}/todos?filter=${currentFilter !== 'all' ? currentFilter : ''}&sort=${currentSort}`;
+  let url = `${API_BASE}/todos?sort=${encodeURIComponent(currentSort)}`;
+  if (currentFilter !== 'all') url += `&filter=${encodeURIComponent(currentFilter)}`;
   if (currentSearch) url += `&search=${encodeURIComponent(currentSearch)}`;
   fetchWithAuth(url)
     .then(resp => {
@@ -255,6 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const title = document.getElementById('edit-title').value;
     const description = document.getElementById('edit-desc').value;
     const completed = document.getElementById('edit-completed').checked;
+    const dueDateValue = document.getElementById('edit-dueDate').value;
     if (!title || !description) {
       // Optionally show a message in the UI, but do not use alert
       return;
@@ -265,7 +277,7 @@ document.addEventListener('DOMContentLoaded', function() {
       fetchWithAuth(`${API_BASE}/todos/${editingTodoId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, description, completed })
+        body: JSON.stringify({ title, description, completed, dueDate: dueDateValue || null })
       })
         .then(async resp => {
           if (!resp.ok) return;
@@ -284,7 +296,9 @@ document.addEventListener('DOMContentLoaded', function() {
       fetchWithAuth(`${API_BASE}/todos`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, description, completed: false })
+        body: JSON.stringify(dueDateValue
+          ? { title, description, completed: false, dueDate: dueDateValue }
+          : { title, description, completed: false })
       })
         .then(async resp => {
           if (!resp.ok) return;
