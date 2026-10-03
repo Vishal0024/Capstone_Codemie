@@ -157,8 +157,11 @@ html, body {
 }
 .output .todo-timestamp {
   font-size: 0.85em;
-  color: #bbb;
+  color: #6b7280;
   margin-top: 0.2em;
+}
+.output .todo-timestamp .todo-date {
+  white-space: nowrap;
 }
 .output .todo-actions {
   display: flex;
@@ -427,6 +430,10 @@ html, body {
   .modal-content { padding: 1.2em 0.7em 1em 0.7em; }
   .app-header { padding: 0 1vw; }
   .fab { bottom: 1.2rem; right: 1.2rem; width: 48px; height: 48px; font-size: 1.5rem; }
+}
+@media (max-width: 480px) {
+  .output .todo-timestamp .todo-date { display: block; white-space: normal; overflow-wrap: anywhere; }
+  .output .todo-timestamp .todo-date-sep { display: none; }
 }
 @media (max-width: 400px) {
   .modal-content { min-width: 90vw; }
