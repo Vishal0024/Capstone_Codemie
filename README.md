@@ -9,6 +9,7 @@ A modern, full-featured To-Do application built with Node.js, Express, and a bea
 - Each user has their own to-do list
 - Responsive, modern UI with floating labels and glassmorphism
 - Search, filter, and sort todos
+- Optional due dates on todos, "Sort by Due date" (earliest first, undated last) and an "Overdue" filter with highlighted overdue cards
 - All data stored in JSON files (no database required)
 - Clean code, easy to extend and contribute
 
@@ -47,6 +48,17 @@ A modern, full-featured To-Do application built with Node.js, Express, and a bea
    npm start
    ```
 5. Open your browser and go to [http://localhost:3000](http://localhost:3000)
+6. (Optional) Run with auto-reload during development: `npm run dev`
+7. (Optional) Build a distributable zip (Windows PowerShell):
+   ```bash
+   npm run build
+   ```
+   This creates `dist/pro-todo-<version>.zip` containing the server, `index.html`, `public/` and `package.json` (runtime data files are not included).
+
+### Due dates API
+- `POST /todos` and `PUT /todos/:id` accept an optional `dueDate` (`YYYY-MM-DD` or an ISO timestamp). `null` or `""` clears it; omitting it on `PUT` keeps the existing value. Invalid values return `400 { "error": "Invalid dueDate" }`.
+- `GET /todos?filter=overdue` returns incomplete todos whose due date is in the past.
+- `GET /todos?sort=dueDate` sorts by due date ascending, with undated todos last.
 
 ## ✨ Usage
 - **Sign Up:** Register with your name, email, and password.
@@ -54,6 +66,20 @@ A modern, full-featured To-Do application built with Node.js, Express, and a bea
 - **Manage To-Dos:** Add, edit, delete, and mark to-dos as complete/incomplete.
 - **Search/Filter/Sort:** Use the controls to find and organize your tasks.
 - **Session:** The app shows who is logged in in the header.
+- **Due dates:** Pick an optional due date when adding or editing a todo. Overdue todos get a red border and an "OVERDUE" badge.
+
+## 🤖 Claude Code CLI Usage
+This feature was delivered with the AI-assisted SDLC pipeline in Claude Code CLI (via CodeMie):
+```text
+/protodo-sdlc --from 5 EPMCDMETST-67513
+```
+Then verify locally:
+```bash
+npm install
+npm run build   # creates dist/pro-todo-<version>.zip
+npm start       # http://localhost:3000
+```
+See [docs/ai/claude-code-cli-usage.md](docs/ai/claude-code-cli-usage.md) for the run log and verification results.
 
 ## 🤝 Contributing
 We welcome contributions! To get started:
@@ -78,7 +104,7 @@ This project is licensed under the ISC License. See the [LICENSE](LICENSE) file 
 ## 🔮 Future Scope
 - Add persistent database support (MongoDB, PostgreSQL, etc.)
 - Add user profile and password reset features
-- Add due dates, reminders, and notifications
+- Add reminders and notifications for due dates
 - Add drag-and-drop for task reordering
 - Add mobile app (React Native or Flutter)
 - Add dark mode and more themes

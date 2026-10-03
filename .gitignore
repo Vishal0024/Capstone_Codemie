@@ -3,7 +3,6 @@ config.bat
 branch_structure.json
 temp_auto_push.bat
 temp_interactive_push.bat
-.gitignore
 .idea/
 server.log
 
@@ -12,3 +11,4 @@ sessions.json
 dist/
 playwright-report/
 test-results/
+.sdlc/

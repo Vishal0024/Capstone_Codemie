@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npx nodemon todoServer.js"
+    "start": "node todoServer.js",
+    "dev": "npx nodemon todoServer.js",
+    "build": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build.ps1"
   },
   "keywords": [],
   "author": "",
