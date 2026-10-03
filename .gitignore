@@ -12,3 +12,13 @@ sessions.json
 dist/
 playwright-report/
 test-results/
+
+# --- Claude Code SDLC (add to .gitignore) ---
+.claude/settings.local.json
+.claude/state/
+.claude/logs/
+.env
+.env.*
+!.env.example
+*.bak
+coverage/
