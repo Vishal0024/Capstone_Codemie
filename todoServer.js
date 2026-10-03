@@ -86,7 +86,31 @@ function validateTodoInput(todo) {
   if (!todo.title || typeof todo.title !== 'string' || todo.title.trim() === '') return false;
   if (!todo.description || typeof todo.description !== 'string') return false;
   if (typeof todo.completed !== 'boolean') return false;
+  if (todo.dueDate !== undefined && todo.dueDate !== null && typeof todo.dueDate !== 'string') return false;
   return true;
+}
+
+// Normalize an incoming dueDate: undefined = not provided, null/'' = cleared,
+// 'YYYY-MM-DD' = UTC midnight, any other parseable string = ISO timestamp.
+function normalizeDueDate(input) {
+  if (input === undefined) return { value: undefined };
+  if (input === null || input === '') return { value: null };
+  if (typeof input !== 'string') return { error: 'Invalid dueDate' };
+  const iso = /^\d{4}-\d{2}-\d{2}$/.test(input) ? `${input}T00:00:00.000Z` : input;
+  const time = Date.parse(iso);
+  if (Number.isNaN(time)) return { error: 'Invalid dueDate' };
+  const value = new Date(time).toISOString();
+  // Reject calendar-invalid dates such as 2026-02-31 that Date would roll over
+  if (iso !== input && value.slice(0, 10) !== input) return { error: 'Invalid dueDate' };
+  return { value };
+}
+
+function withDueDate(todo) {
+  return todo.dueDate === undefined ? { ...todo, dueDate: null } : todo;
+}
+
+function isOverdue(todo) {
+  return !todo.completed && !!todo.dueDate && Date.parse(todo.dueDate) < Date.now();
 }
 
 // Signup
@@ -107,6 +131,7 @@ app.post('/signup', (req, res) => {
       title: 'Welcome to your To-Do List!',
       description: 'This is your first todo. You can edit or delete it.',
       completed: false,
+      dueDate: null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     });
@@ -146,7 +171,7 @@ function requireAuth(req, res, next) {
 
 // GET /todos - Retrieve all todo items, with optional search/filter/sort
 app.get('/todos', requireAuth, (req, res) => {
-  let todos = readTodos().filter(t => t.userId === req.userId);
+  let todos = readTodos().filter(t => t.userId === req.userId).map(withDueDate);
   const { search, filter, sort } = req.query;
   if (search) {
     const s = search.toLowerCase();
@@ -154,9 +179,19 @@ app.get('/todos', requireAuth, (req, res) => {
   }
   if (filter === 'completed') todos = todos.filter(t => t.completed);
   if (filter === 'active') todos = todos.filter(t => !t.completed);
+  if (filter === 'overdue') todos = todos.filter(isOverdue);
   if (sort === 'title') todos = todos.sort((a, b) => a.title.localeCompare(b.title));
   if (sort === 'createdAt') todos = todos.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   if (sort === 'updatedAt') todos = todos.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+  if (sort === 'dueDate') {
+    // Earliest due first, undated todos last, ties broken by id
+    todos = todos.sort((a, b) => {
+      if (!a.dueDate && !b.dueDate) return a.id - b.id;
+      if (!a.dueDate) return 1;
+      if (!b.dueDate) return -1;
+      return (Date.parse(a.dueDate) - Date.parse(b.dueDate)) || (a.id - b.id);
+    });
+  }
   res.status(200).json(todos);
 });
 
@@ -166,7 +201,7 @@ app.get('/todos/:id', requireAuth, (req, res) => {
   const todos = readTodos();
   const todo = todos.find((x) => x.id === todoID && x.userId === req.userId);
   if (todo) {
-    res.status(200).json(todo);
+    res.status(200).json(withDueDate(todo));
   } else {
     res.status(404).send({ error: 'Record Not Found!' });
   }
@@ -176,12 +211,15 @@ app.get('/todos/:id', requireAuth, (req, res) => {
 app.post('/todos', requireAuth, (req, res) => {
   const todos = readTodos();
   const { title, description, completed } = req.body;
+  const due = normalizeDueDate(req.body.dueDate);
+  if (due.error) return res.status(400).json({ error: due.error });
   const newTodo = {
     id: todos.length > 0 ? todos[todos.length - 1].id + 1 : 1,
     userId: req.userId,
     title,
     description,
     completed: !!completed,
+    dueDate: due.value === undefined ? null : due.value,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
@@ -199,13 +237,17 @@ app.put('/todos/:id', requireAuth, (req, res) => {
   const todoIndex = todos.findIndex((data) => data.id == req.params.id && data.userId === req.userId);
   if (todoIndex !== -1) {
     const { title, description, completed } = req.body;
+    const due = normalizeDueDate(req.body.dueDate);
+    if (due.error) return res.status(400).json({ error: due.error });
     const updatedTodo = {
-      ...todos[todoIndex],
+      ...withDueDate(todos[todoIndex]),
       title,
       description,
       completed: !!completed,
       updatedAt: new Date().toISOString(),
     };
+    // Only touch dueDate when the key is present in the body
+    if (due.value !== undefined) updatedTodo.dueDate = due.value;
     if (!validateTodoInput(updatedTodo)) {
       return res.status(400).json({ error: 'Invalid input' });
     }
