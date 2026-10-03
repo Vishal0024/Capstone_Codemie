@@ -1,5 +1,5 @@
 # EPMCDMETST-67543 – Design Review
-Story: [EPMCDMETST-67543](https://jiraeu.epam.com/browse/EPMCDMETST-67543) · Branch: `feature/EPMCDMETST-67543-card-created-edited-dates` · Requirements: [requirements.md](requirements.md) (commit `58dfc33`) · Architecture: [architecture.md](architecture.md) (commit `920ffc7`) · Date: 2026-10-04
+Story: [EPMCDMETST-67543](https://jiraeu.epam.com/browse/EPMCDMETST-67543) · Branch: `feature/EPMCDMETST-67543-card-created-edited-dates` · Requirements: [requirements.md](requirements.md) (commit `58dfc33`) · Architecture: [architecture.md](architecture.md) (reviewed at commit `920ffc7`, updated in `098a1af`) · Date: 2026-10-04 (decisions recorded 2026-10-04)
 
 ## 1. Scope of the Review
 
@@ -90,14 +90,38 @@ Security: rendering uses `createElement` + `textContent` only (NFR-001); no new 
 | ID | Change | Reason | Approval |
 |---|---|---|---|
 | OOS-1 | `.output .todo-timestamp` colour changes from `#bbb` to `#6b7280`. | Readability / contrast (NFR-004): ≈ 1.9:1 → ≈ 4.7:1 on the card background. | Explicitly approved by the user at Gate 2 (Global Rule 2). |
+| OOS-2 | `@playwright/test` as a devDependency, `playwright.config.js`, `test:e2e` script and AC-007 regression specs, added in Step 7 (D-1). NFR-002 read as runtime/product dependencies only. | AC-007/AC-008 need repeatable E2E evidence; the repository has no E2E tooling (F-01). | Explicitly approved by the user at Gate 3 ("approve" of D-1 … D-12 as written; Global Rule 2). Recorded in `architecture.md` (commit `098a1af`). |
 
-Pending approval (proposed in this review, not yet approved): D-1 adds `@playwright/test` as a devDependency plus `playwright.config.js` and a `test:e2e` script.
+No change is pending approval.
 
-## 6. Verdict
+## 6. Agreed Design Decisions
 
-**APPROVED WITH CHANGES** — no BLOCKER findings; 2 MAJOR and 9 MINOR findings. Proceed after the user agrees the decisions in Section 3 and the architecture is updated with D-1, D-2, D-3, D-4, D-5, D-6, D-7 and D-10.
+At Gate 3 the user replied "approve", agreeing to all twelve decisions D-1 … D-12 as proposed in Section 3 (commit `0ad83a6`), with no modifications. The `architecture` agent applied them in commit `098a1af` ("docs(EPMCDMETST-67543): update architecture after design review"), which adds a dated "Changes after design review" section. Each decision was checked against the updated `architecture.md`.
+
+| Decision | Agreed | Status | Verified in `architecture.md` |
+|---|---|---|---|
+| D-1 | As proposed | Applied in `098a1af` | Section 1; Section 2 (PW node); Section 3 (E2E tests, E2E tooling rows); Section 4 (E2E test tooling row); R-6, R-8; Section 11 NFR-002; Approved Out-of-Scope Changes OOS-2. |
+| D-2 | As proposed | Applied in `098a1af` | Section 3: `tests/api/` removed, "API tests – Not added" row; `todoServer.js` stays unchanged. |
+| D-3 | As proposed | Applied in `098a1af` | Section 3 (E2E tests row: `page.route` fixture list, real create → wait ≥ 1100 ms → edit flow); Section 4 (Fallback-case test data row); R-9. |
+| D-4 | As proposed | Applied in `098a1af` | Section 3 (Unit tests and E2E tests rows); R-2: local-time constructors, 00:30 / 23:30 boundary cases, `process.env.TZ` not set, expected E2E date via `formatCardDate(new Date())`. |
+| D-5 | As proposed | Applied in `098a1af` | Section 3 (Card metadata style row); Section 4 (Mobile layout row); Section 6.3 CSS sketch: `.todo-date { white-space: nowrap }`, and `white-space: normal; overflow-wrap: anywhere` at ≤ 480px. |
+| D-6 | As proposed | Applied in `098a1af` | Section 3 (`buildTodoDates` row) and Section 6.3 DOM sketch: separator not `aria-hidden`. |
+| D-7 | As proposed | Applied in `098a1af` | R-3 records ≈ 4.7:1 (worst case `#fafbff`) and ≈ 4.8:1 (white); the contrast open question is closed; final visual check stays in Step 7. |
+| D-8 | As proposed | No architecture change needed (implementation note for Steps 4/5); also noted in `098a1af` | Section 3 (`buildTodoDates` row) and Section 6.3 DOM sketch. Clarification: both documents show the separator as the rendered character U+00B7; the intended source form in `script.js` is the JavaScript Unicode escape (a backslash followed by `u00B7`) between two spaces, so the file stays ASCII-only. |
+| D-9 | As proposed | No architecture change needed (implementation note for Steps 4/5); also noted in `098a1af` | Section 3 (Unit tests row): the three global stubs before one `require`, no jsdom. |
+| D-10 | As proposed | Applied in `098a1af` | Open Questions / Not Found (known-limitations bullet) and R-10. |
+| D-11 | As proposed | No architecture change needed (implementation note for Step 4); also noted in `098a1af` | Section 3 (`renderTodos` row) and R-6. |
+| D-12 | As proposed | No architecture change needed (belongs in `impl-plan.md` / `verification.md`); also noted in `098a1af` | Section 3 (E2E tests row) names the FR-009, FR-010 and FR-011 assertions. |
+
+Result: all eight decisions that change `architecture.md` (D-1, D-2, D-3, D-4, D-5, D-6, D-7, D-10) are applied correctly. The four implementation-note decisions (D-8, D-9, D-11, D-12) need no architecture change and are carried forward to Steps 4, 5 and 7. No decision was applied incorrectly or left out. The component structure, helper contracts and data flow are unchanged, as the review expected.
+
+## 7. Verdict
+
+Initial verdict (commit `0ad83a6`): **APPROVED WITH CHANGES**. No BLOCKER findings; 2 MAJOR and 9 MINOR findings.
+
+**Final verdict: APPROVED.** All MAJOR and MINOR findings (F-01 … F-11) are resolved by agreed decisions D-1 … D-12. The decisions that change the design are applied in `architecture.md` (commit `098a1af`). The rest are carried as implementation notes. The out-of-story change for the E2E tooling is approved as OOS-2. Step 4 (Implementation Planning) can start from `architecture.md` at `098a1af` together with D-8, D-9, D-11 and D-12 above.
 
 ## Open Questions / Not Found
 
-- Whether the user accepts `@playwright/test` as a devDependency under NFR-002 (D-1): awaiting Gate 3.
+- `@playwright/test` as a devDependency under NFR-002 (D-1): resolved; approved by the user at Gate 3 (OOS-2).
 - Epic Link (`customfield_14500`): Not Found (carried over from requirements KL-1).
