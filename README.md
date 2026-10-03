@@ -6,6 +6,7 @@ A modern, full-featured To-Do application built with Node.js, Express, and a bea
 - User authentication (Sign Up & Login with Name, Email, Password)
 - Session management (shows who is logged in)
 - Add, edit, delete, and toggle completion of to-dos
+- Each task card shows when it was created and, if changed, when it was last edited (e.g. "Created 05 Oct 2026 · Edited 06 Oct 2026")
 - Each user has their own to-do list
 - Responsive, modern UI with floating labels and glassmorphism
 - Search, filter, and sort todos
@@ -52,6 +53,7 @@ A modern, full-featured To-Do application built with Node.js, Express, and a bea
 - **Sign Up:** Register with your name, email, and password.
 - **Login:** Use your email and password to log in.
 - **Manage To-Dos:** Add, edit, delete, and mark to-dos as complete/incomplete.
+- **Task dates:** Every card shows "Created DD Mon YYYY" in your local time; "Edited DD Mon YYYY" appears after you change a task (editing or marking it complete/active). On small screens (480px or less) the two dates stack on separate lines.
 - **Search/Filter/Sort:** Use the controls to find and organize your tasks.
 - **Session:** The app shows who is logged in in the header.
 
