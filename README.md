@@ -1,6 +1,6 @@
 # Pro To-Do Application
 
-A modern, full-featured To-Do application built with Node.js, Express, and a beautiful HTML/CSS frontend. This project is perfect for beginners and open source contributors who want to learn about full-stack web development without a database—data is stored in JSON files for simplicity.
+A modern,full-featured To-Do application built with Node.js, Express, and a beautiful HTML/CSS frontend. This project is perfect for beginners and open source contributors who want to learn about full-stack web development without a database—data is stored in JSON files for simplicity.
 
 ## 🚀 Features
 - User authentication (Sign Up & Login with Name, Email, Password)
