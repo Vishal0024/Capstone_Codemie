@@ -8,12 +8,14 @@
     "test:unit": "jest tests/unit --passWithNoTests",
     "test:hooks": "jest tests/hooks",
     "test:docs": "jest tests/docs",
-    "docs:check": "node scripts/check-docs.mjs"
+    "docs:check": "node scripts/check-docs.mjs",
+    "test:e2e": "playwright test"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "jest": "^29.7.0",
     "nodemon": "^3.0.1",
     "supertest": "^6.3.3"
